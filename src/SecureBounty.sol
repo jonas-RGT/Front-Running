@@ -5,6 +5,8 @@ contract SecureBounty {
     uint256 public reward;
     uint256 public constant WAIT_BLOCKS = 10;
 
+    bytes32 public answerHash;
+
     struct Commit {
         bytes32 hash;
         uint256 blockNumber;
@@ -13,8 +15,9 @@ contract SecureBounty {
 
     mapping(address => Commit) public commits;
 
-    constructor() payable {
+    constructor(bytes32 _answerHash) payable {
         reward = msg.value;
+        answerHash = _answerHash;
     }
 
     function commit(bytes32 hash) external {
@@ -29,6 +32,8 @@ contract SecureBounty {
 
         bytes32 h = keccak256(abi.encodePacked(answer, msg.sender, salt));
         require(h == c.hash, "Invalid");
+
+        require(keccak256(abi.encodePacked(answer)) == answerHash, "Wrong answer");
 
         c.revealed = true;
         (bool ok,) = msg.sender.call{value: reward}("");

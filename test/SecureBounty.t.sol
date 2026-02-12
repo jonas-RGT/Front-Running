@@ -10,7 +10,8 @@ contract SecureBountyTest is Test {
     address attacker = address(2);
 
     function setUp() public {
-        bounty = new SecureBounty{value: 10 ether}();
+        bytes32 answerHash = keccak256(abi.encodePacked("secret42"));
+        bounty = new SecureBounty{value: 10 ether}(answerHash);
         vm.deal(solver, 1 ether);
         vm.deal(attacker, 1 ether);
     }
